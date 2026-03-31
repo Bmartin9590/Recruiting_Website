@@ -261,6 +261,40 @@ select {
   margin-top: 1.5rem;
 }
 
+.platform-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.lane-card {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(6, 18, 34, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lane-label {
+  margin: 0 0 0.35rem;
+  color: var(--carolina-300);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.lane-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.lane-copy {
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.94rem;
+}
+
 .metric-card {
   padding: 1rem;
   border-radius: var(--radius-md);
@@ -285,6 +319,22 @@ select {
   padding-left: 1.15rem;
   color: var(--text-muted);
   line-height: 1.7;
+}
+
+.console-block {
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border-radius: var(--radius-md);
+  background: rgba(7, 21, 38, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.console-label {
+  margin: 0;
+  color: var(--carolina-300);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .coach-card {
@@ -597,6 +647,7 @@ select {
 
   .filter-controls,
   .hero-metrics,
+  .platform-lanes,
   .profile-quickfacts,
   .profile-links,
   .profile-stats-grid {
@@ -621,6 +672,7 @@ select {
 
   .filter-controls,
   .hero-metrics,
+  .platform-lanes,
   .profile-quickfacts,
   .profile-links,
   .profile-stats-grid {
