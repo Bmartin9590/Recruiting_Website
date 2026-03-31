@@ -18,6 +18,84 @@ const elements = {
   athleteCardTemplate: document.getElementById("athlete-card-template"),
 };
 
+function safeText(value, fallback = "") {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+
+  const text = String(value).replace(/\s+/g, " ").trim();
+  return text || fallback;
+}
+
+function safeList(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  return values.map((value) => safeText(value)).filter(Boolean);
+}
+
+function safeUrl(value, options = {}) {
+  const { allowRelative = false, allowedProtocols = ["https:", "http:"] } = options;
+  const raw = safeText(value);
+
+  if (!raw) {
+    return "";
+  }
+
+  if (allowRelative && (/^\.\.?\//.test(raw) || raw.startsWith("/"))) {
+    return raw;
+  }
+
+  try {
+    const url = new URL(raw, window.location.href);
+    if (!allowedProtocols.includes(url.protocol)) {
+      return "";
+    }
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function createNode(tagName, options = {}) {
+  const { className = "", text = "", attrs = {} } = options;
+  const node = document.createElement(tagName);
+
+  if (className) {
+    node.className = className;
+  }
+
+  if (text) {
+    node.textContent = text;
+  }
+
+  Object.entries(attrs).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      node.setAttribute(key, value);
+    }
+  });
+
+  return node;
+}
+
+function buildButtonLink({ label, href, className }) {
+  const safeHref = safeUrl(href);
+  if (!safeHref) {
+    return null;
+  }
+
+  return createNode("a", {
+    className,
+    text: label,
+    attrs: {
+      href: safeHref,
+      target: "_blank",
+      rel: "noreferrer",
+    },
+  });
+}
+
 function isPlaceholderUrl(url) {
   return !url || url.includes("REPLACE_WITH_YOUR_FORM_ID");
 }
@@ -52,32 +130,37 @@ function getSummaryStats(athletes) {
 function buildMetricCard(metric) {
   const wrapper = document.createElement("article");
   wrapper.className = "metric-card";
-  wrapper.innerHTML = `
-    <p class="metric-value">${metric.value}</p>
-    <p class="metric-label">${metric.label}</p>
-  `;
+  wrapper.appendChild(createNode("p", { className: "metric-value", text: safeText(metric.value, "0") }));
+  wrapper.appendChild(createNode("p", { className: "metric-label", text: safeText(metric.label) }));
   return wrapper;
 }
 
 function normalizeAthlete(rawAthlete) {
+  const positions = safeList(rawAthlete.positions);
+  const achievements = safeList(rawAthlete.achievements);
+  const photoUrl =
+    safeUrl(rawAthlete.photoUrl, { allowRelative: true }) || "./assets/headshot-placeholder.svg";
+  const hudlUrl = safeUrl(rawAthlete.hudlUrl);
+  const highlightUrl = safeUrl(rawAthlete.highlightUrl) || hudlUrl;
+
   return {
     id: rawAthlete.id || crypto.randomUUID(),
-    name: rawAthlete.name || "Unnamed Athlete",
-    graduationYear: rawAthlete.graduationYear || "",
-    jerseyNumber: rawAthlete.jerseyNumber || "",
-    positions: Array.isArray(rawAthlete.positions) ? rawAthlete.positions : [],
-    height: rawAthlete.height || "Not listed",
-    weight: rawAthlete.weight || "Not listed",
-    gpa: rawAthlete.gpa || "Not listed",
-    why: rawAthlete.why || "Why statement coming soon.",
-    hudlUrl: rawAthlete.hudlUrl || "",
-    highlightUrl: rawAthlete.highlightUrl || rawAthlete.hudlUrl || "",
-    photoUrl: rawAthlete.photoUrl || "./assets/headshot-placeholder.svg",
-    hometown: rawAthlete.hometown || "Clarksburg, MD",
-    academicInterests: rawAthlete.academicInterests || "Open",
-    statsSummary: rawAthlete.statsSummary || "",
-    coachNote: rawAthlete.coachNote || "",
-    achievements: Array.isArray(rawAthlete.achievements) ? rawAthlete.achievements : [],
+    name: safeText(rawAthlete.name, "Unnamed Athlete"),
+    graduationYear: safeText(rawAthlete.graduationYear),
+    jerseyNumber: safeText(rawAthlete.jerseyNumber),
+    positions: positions,
+    height: safeText(rawAthlete.height, "Not listed"),
+    weight: safeText(rawAthlete.weight, "Not listed"),
+    gpa: safeText(rawAthlete.gpa, "Not listed"),
+    why: safeText(rawAthlete.why, "Why statement coming soon."),
+    hudlUrl: hudlUrl,
+    highlightUrl: highlightUrl,
+    photoUrl: photoUrl,
+    hometown: safeText(rawAthlete.hometown, "Clarksburg, MD"),
+    academicInterests: safeText(rawAthlete.academicInterests, "Open"),
+    statsSummary: safeText(rawAthlete.statsSummary),
+    coachNote: safeText(rawAthlete.coachNote),
+    achievements: achievements,
     stats: rawAthlete.stats || {},
   };
 }
@@ -197,8 +280,10 @@ function renderAthleteGrid() {
   if (!state.filteredAthletes.length) {
     const emptyState = document.createElement("article");
     emptyState.className = "glass-panel empty-state";
-    emptyState.innerHTML =
-      "<h4>No athletes match this filter set yet.</h4><p>Clear a filter or add another athlete record to the data source.</p>";
+    emptyState.appendChild(createNode("h4", { text: "No athletes match this filter set yet." }));
+    emptyState.appendChild(
+      createNode("p", { text: "Clear a filter or add another athlete record to the data source." })
+    );
     elements.athleteGrid.appendChild(emptyState);
     return;
   }
@@ -220,7 +305,7 @@ function renderAthleteGrid() {
     athleteClass.textContent = formatClassYear(athlete.graduationYear);
     name.textContent = athlete.name;
     number.textContent = athlete.jerseyNumber ? `#${athlete.jerseyNumber}` : "";
-    meta.textContent = `${athlete.positions.join(" / ")} • ${athlete.height} • ${athlete.weight}`;
+    meta.textContent = `${athlete.positions.join(" / ") || "Position TBD"} • ${athlete.height} • ${athlete.weight}`;
     summary.textContent = athlete.statsSummary || athlete.why;
 
     const statPills = [
@@ -256,82 +341,116 @@ function buildFacts(athlete) {
 }
 
 function buildStatBoxes(stats) {
-  return Object.entries(stats)
+  const fragment = document.createDocumentFragment();
+
+  Object.entries(stats)
     .filter(([, value]) => value)
-    .map(([label, value]) => {
+    .forEach(([label, value]) => {
       const friendlyLabel = label.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
-      return `
-        <div class="stat-box">
-          <span class="stat-label">${friendlyLabel}</span>
-          <p class="stat-value">${value}</p>
-        </div>
-      `;
-    })
-    .join("");
+      const box = createNode("div", { className: "stat-box" });
+      box.appendChild(createNode("span", { className: "stat-label", text: friendlyLabel }));
+      box.appendChild(createNode("p", { className: "stat-value", text: safeText(value) }));
+      fragment.appendChild(box);
+    });
+
+  return fragment;
+}
+
+function buildFactBoxes(athlete) {
+  const fragment = document.createDocumentFragment();
+
+  buildFacts(athlete).forEach((fact) => {
+    const box = createNode("div", { className: "fact-box" });
+    box.appendChild(createNode("span", { className: "fact-label", text: fact.label }));
+    box.appendChild(createNode("p", { className: "fact-value", text: fact.value }));
+    fragment.appendChild(box);
+  });
+
+  return fragment;
 }
 
 function openProfile(athlete) {
   state.selectedAthlete = athlete;
-  const factsMarkup = buildFacts(athlete)
-    .map(
-      (fact) => `
-        <div class="fact-box">
-          <span class="fact-label">${fact.label}</span>
-          <p class="fact-value">${fact.value}</p>
-        </div>
-      `
-    )
-    .join("");
+  elements.modalContent.replaceChildren();
 
-  const linkMarkup = `
-    ${athlete.hudlUrl ? `<a class="primary-button" href="${athlete.hudlUrl}" target="_blank" rel="noreferrer">Open Hudl</a>` : ""}
-    ${
-      athlete.highlightUrl
-        ? `<a class="ghost-button" href="${athlete.highlightUrl}" target="_blank" rel="noreferrer">Watch Highlights</a>`
-        : ""
-    }
-  `;
+  const layout = createNode("div", { className: "profile-layout" });
+  const imageWrap = createNode("div");
+  const image = createNode("img", {
+    className: "profile-image",
+    attrs: {
+      src: athlete.photoUrl,
+      alt: `${athlete.name} headshot`,
+      loading: "lazy",
+    },
+  });
+  imageWrap.appendChild(image);
+
+  const panel = createNode("div", { className: "profile-panel" });
+  panel.appendChild(createNode("p", { className: "eyebrow", text: formatClassYear(athlete.graduationYear) }));
+  panel.appendChild(createNode("h3", { className: "profile-title", text: athlete.name }));
+  panel.appendChild(
+    createNode("p", {
+      className: "profile-subtitle",
+      text: `${athlete.positions.join(" / ") || "Position TBD"} • ${athlete.hometown}`,
+    })
+  );
+
+  const quickFacts = createNode("div", { className: "profile-quickfacts" });
+  quickFacts.appendChild(buildFactBoxes(athlete));
+  panel.appendChild(quickFacts);
+
+  const whyCopy = createNode("p", { className: "profile-copy" });
+  const whyStrong = createNode("strong", { text: "Why: " });
+  whyCopy.appendChild(whyStrong);
+  whyCopy.appendChild(document.createTextNode(athlete.why));
+  panel.appendChild(whyCopy);
+
+  if (athlete.coachNote) {
+    const coachCopy = createNode("p", { className: "profile-copy" });
+    coachCopy.appendChild(createNode("strong", { text: "Coach note: " }));
+    coachCopy.appendChild(document.createTextNode(athlete.coachNote));
+    panel.appendChild(coachCopy);
+  }
+
+  const links = [
+    buildButtonLink({ label: "Open Hudl", href: athlete.hudlUrl, className: "primary-button" }),
+    buildButtonLink({ label: "Watch Highlights", href: athlete.highlightUrl, className: "ghost-button" }),
+  ].filter(Boolean);
+
+  if (links.length) {
+    const linksWrap = createNode("div", { className: "profile-links" });
+    links.forEach((link) => linksWrap.appendChild(link));
+    panel.appendChild(linksWrap);
+  }
+
+  if (athlete.statsSummary) {
+    const summaryCopy = createNode("p", { className: "profile-copy" });
+    summaryCopy.appendChild(createNode("strong", { text: "Season snapshot: " }));
+    summaryCopy.appendChild(document.createTextNode(athlete.statsSummary));
+    panel.appendChild(summaryCopy);
+  }
+
+  if (Object.keys(athlete.stats).length) {
+    const statsGrid = createNode("div", { className: "profile-stats-grid" });
+    statsGrid.appendChild(buildStatBoxes(athlete.stats));
+    panel.appendChild(statsGrid);
+  }
 
   const tags = [
     athlete.academicInterests && `Academic interests: ${athlete.academicInterests}`,
     athlete.achievements[0] && athlete.achievements[0],
     athlete.achievements[1] && athlete.achievements[1],
-  ]
-    .filter(Boolean)
-    .map((tag) => `<div class="tag-box">${tag}</div>`)
-    .join("");
+  ].filter(Boolean);
 
-  elements.modalContent.innerHTML = `
-    <div class="profile-layout">
-      <div>
-        <img class="profile-image" src="${athlete.photoUrl}" alt="${athlete.name} headshot" />
-      </div>
-      <div class="profile-panel">
-        <p class="eyebrow">${formatClassYear(athlete.graduationYear)}</p>
-        <h3 class="profile-title">${athlete.name}</h3>
-        <p class="profile-subtitle">${athlete.positions.join(" / ")} • ${athlete.hometown}</p>
-        <div class="profile-quickfacts">${factsMarkup}</div>
-        <p class="profile-copy"><strong>Why:</strong> ${athlete.why}</p>
-        ${
-          athlete.coachNote
-            ? `<p class="profile-copy"><strong>Coach note:</strong> ${athlete.coachNote}</p>`
-            : ""
-        }
-        ${linkMarkup ? `<div class="profile-links">${linkMarkup}</div>` : ""}
-        ${
-          athlete.statsSummary
-            ? `<p class="profile-copy"><strong>Season snapshot:</strong> ${athlete.statsSummary}</p>`
-            : ""
-        }
-        ${
-          Object.keys(athlete.stats).length
-            ? `<div class="profile-stats-grid">${buildStatBoxes(athlete.stats)}</div>`
-            : ""
-        }
-        ${tags ? `<div class="profile-tags">${tags}</div>` : ""}
-      </div>
-    </div>
-  `;
+  if (tags.length) {
+    const tagsWrap = createNode("div", { className: "profile-tags" });
+    tags.forEach((tag) => tagsWrap.appendChild(createNode("div", { className: "tag-box", text: tag })));
+    panel.appendChild(tagsWrap);
+  }
+
+  layout.appendChild(imageWrap);
+  layout.appendChild(panel);
+  elements.modalContent.appendChild(layout);
 
   elements.profileModal.showModal();
 }
@@ -379,11 +498,39 @@ function configureSubmitButton() {
 
 function renderCoachContact() {
   const config = window.RECRUITING_CONFIG || {};
-  elements.coachContact.innerHTML = `
-    <p class="eyebrow">Coach Contact</p>
-    <div>${config.coachEmail || "Add a coach email in js/config.js"}</div>
-    <div>${config.coachPhone || "Add a coach phone number in js/config.js"}</div>
-  `;
+  elements.coachContact.replaceChildren();
+
+  elements.coachContact.appendChild(createNode("p", { className: "eyebrow", text: "Recruiter Access" }));
+  elements.coachContact.appendChild(
+    createNode("div", {
+      text:
+        safeText(
+          config.publicContactNote,
+          "Recruiters can request athlete contact and supporting information through our staff-managed inquiry form."
+        ),
+    })
+  );
+
+  const inquiryLink = buildButtonLink({
+    label: "Request Contact / Transcript",
+    href: config.recruiterInquiryUrl,
+    className: "ghost-button contact-button",
+  });
+
+  if (inquiryLink) {
+    elements.coachContact.appendChild(inquiryLink);
+  }
+
+  if (config.displayCoachDirectContact) {
+    const directWrap = createNode("div", { className: "direct-contact-list" });
+    directWrap.appendChild(
+      createNode("div", { text: safeText(config.coachEmail, "Add a coach email in js/config.js") })
+    );
+    directWrap.appendChild(
+      createNode("div", { text: safeText(config.coachPhone, "Add a coach phone number in js/config.js") })
+    );
+    elements.coachContact.appendChild(directWrap);
+  }
 }
 
 async function init() {
@@ -397,12 +544,11 @@ async function init() {
     populateFilters(state.athletes);
     renderAthleteGrid();
   } catch (error) {
-    elements.athleteGrid.innerHTML = `
-      <article class="glass-panel empty-state">
-        <h4>Data source not connected yet.</h4>
-        <p>${error.message}</p>
-      </article>
-    `;
+    const emptyState = document.createElement("article");
+    emptyState.className = "glass-panel empty-state";
+    emptyState.appendChild(createNode("h4", { text: "Data source not connected yet." }));
+    emptyState.appendChild(createNode("p", { text: safeText(error.message, "Unable to load athlete data.") }));
+    elements.athleteGrid.replaceChildren(emptyState);
   }
 }
 

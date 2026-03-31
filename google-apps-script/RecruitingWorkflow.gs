@@ -1,4 +1,5 @@
 const FORM_TITLE = "Clarksburg High School Football Recruiting Profile";
+const RECRUITER_INQUIRY_FORM_TITLE = "Clarksburg Football Recruiter Inquiry";
 const SHEET_NAME = "Athletes";
 const MAKE_PHOTOS_PUBLIC = false;
 const SPREADSHEET_ID_PROPERTY = "RECRUITING_SPREADSHEET_ID";
@@ -44,7 +45,6 @@ function createRecruitingWorkflow() {
   addShortAnswer_(form, "Interceptions", false);
   addShortAnswer_(form, "Bench Max", false);
   addShortAnswer_(form, "Squat Max", false);
-  addParagraph_(form, "Coach Public Note", false);
 
   const spreadsheet = SpreadsheetApp.create("CHS Football Recruiting Responses");
   form.setDestination(FormApp.DestinationType.SPREADSHEET, spreadsheet.getId());
@@ -69,11 +69,31 @@ function createRecruitingWorkflow() {
   Logger.log("Spreadsheet URL: " + spreadsheet.getUrl());
 }
 
+function createRecruiterInquiryForm() {
+  const form = FormApp.create(RECRUITER_INQUIRY_FORM_TITLE);
+  form.setDescription(
+    "College recruiters can use this form to request athlete contact, transcripts, or additional film from Clarksburg High School Football."
+  );
+  form.setCollectEmail(true);
+
+  addShortAnswer_(form, "Recruiter Full Name", true);
+  addShortAnswer_(form, "College / Program", true);
+  addShortAnswer_(form, "Role / Title", true);
+  addShortAnswer_(form, "Recruiter Phone Number", false);
+  addShortAnswer_(form, "Athlete Name", true);
+  addShortAnswer_(form, "Graduation Year", false);
+  addParagraph_(form, "What information are you requesting?", true);
+  addParagraph_(form, "Additional message", false);
+
+  Logger.log("Recruiter Inquiry Form URL: " + form.getPublishedUrl());
+  Logger.log("Recruiter Inquiry Edit URL: " + form.getEditUrl());
+}
+
 function syncAthleteSheet() {
   const spreadsheet = getRecruitingSpreadsheet_();
   const responseSheet = spreadsheet.getSheets()[0];
   const athleteSheet = upsertAthleteSheet_(spreadsheet);
-  const publishMap = getExistingPublishMap_(athleteSheet);
+  const overridesMap = getExistingOverridesMap_(athleteSheet);
   const rows = responseSheet.getDataRange().getValues();
 
   if (rows.length <= 1) {
@@ -87,7 +107,7 @@ function syncAthleteSheet() {
 
   const headers = rows[0];
   const payload = rows.slice(1).map((row) => mapRowToAthlete_(headers, row));
-  const values = payload.map((athlete) => flattenAthleteForSheet_(athlete, publishMap[athlete.id] || ""));
+  const values = payload.map((athlete) => flattenAthleteForSheet_(athlete, overridesMap[athlete.id] || {}));
 
   athleteSheet.getRange(2, 1, Math.max(athleteSheet.getMaxRows() - 1, 1), athleteSheet.getLastColumn()).clearContent();
   athleteSheet.getRange(2, 1, values.length, values[0].length).setValues(values);
@@ -189,7 +209,6 @@ function mapRowToAthlete_(headers, row) {
     hometown: safeString_(entry["Hometown"]),
     academicInterests: safeString_(entry["Academic Interests / Intended Major"]),
     statsSummary: safeString_(entry["Season Stats Summary"]),
-    coachNote: safeString_(entry["Coach Public Note"]),
     achievements: safeString_(entry["Honors / Awards / Recruiting Notes"]),
     passingYards: safeString_(entry["Passing Yards"]),
     passingTouchdowns: safeString_(entry["Passing Touchdowns"]),
@@ -205,10 +224,10 @@ function mapRowToAthlete_(headers, row) {
   };
 }
 
-function flattenAthleteForSheet_(athlete, publishValue) {
+function flattenAthleteForSheet_(athlete, overrides) {
   return [
     athlete.id,
-    publishValue,
+    safeString_(overrides.publish),
     athlete.name,
     athlete.graduationYear,
     athlete.jerseyNumber,
@@ -223,7 +242,7 @@ function flattenAthleteForSheet_(athlete, publishValue) {
     athlete.hometown,
     athlete.academicInterests,
     athlete.statsSummary,
-    athlete.coachNote,
+    safeString_(overrides.coachNote),
     athlete.achievements,
     athlete.passingYards,
     athlete.passingTouchdowns,
@@ -380,7 +399,7 @@ function formatOutput_(e, payload) {
   return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.JSON);
 }
 
-function getExistingPublishMap_(athleteSheet) {
+function getExistingOverridesMap_(athleteSheet) {
   const rows = athleteSheet.getDataRange().getValues();
 
   if (rows.length <= 1) {
@@ -390,15 +409,19 @@ function getExistingPublishMap_(athleteSheet) {
   const headers = rows[0];
   const idIndex = headers.indexOf("id");
   const publishIndex = headers.indexOf("publish");
+  const coachNoteIndex = headers.indexOf("coachNote");
 
-  if (idIndex === -1 || publishIndex === -1) {
+  if (idIndex === -1 || publishIndex === -1 || coachNoteIndex === -1) {
     return {};
   }
 
   return rows.slice(1).reduce(function (map, row) {
     const id = safeString_(row[idIndex]);
     if (id) {
-      map[id] = safeString_(row[publishIndex]);
+      map[id] = {
+        publish: safeString_(row[publishIndex]),
+        coachNote: safeString_(row[coachNoteIndex]),
+      };
     }
     return map;
   }, {});

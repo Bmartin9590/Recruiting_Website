@@ -37,6 +37,10 @@ That creates:
 
 New form submissions land in the `Athletes` sheet with a blank `publish` column. Change that value to `yes` only when you want an athlete visible on the public website.
 
+### 1B. Create the recruiter inquiry form
+
+Run `createRecruiterInquiryForm()` in the same Apps Script project if you want recruiters to request contact, transcripts, or additional film without exposing coach or athlete phone numbers on the public website.
+
 ### 2. Deploy the JSON endpoint
 
 1. In Apps Script, click `Deploy` > `New deployment`.
@@ -53,16 +57,22 @@ Update `js/config.js`:
 window.RECRUITING_CONFIG = {
   schoolName: "Clarksburg High School Football",
   formUrl: "YOUR_GOOGLE_FORM_URL",
+  recruiterInquiryUrl: "YOUR_RECRUITER_INQUIRY_FORM_URL",
   dataMode: "remote",
   remoteDataUrl: "YOUR_APPS_SCRIPT_WEB_APP_URL",
   remoteJsonpUrl: "YOUR_APPS_SCRIPT_WEB_APP_URL",
   localDataUrl: "./data/athletes.json",
-  coachEmail: "your-email@example.com",
-  coachPhone: "(240) 555-0147",
+  coachEmail: "",
+  coachPhone: "",
+  displayCoachDirectContact: false,
+  publicContactNote:
+    "Recruiters can request athlete contact, transcripts, and additional information through our recruiting request form.",
 };
 ```
 
 `remoteJsonpUrl` gives you a fallback for static hosting if the browser blocks direct cross-origin fetches to the Apps Script endpoint.
+
+Do not put private phone numbers or non-public email addresses in `js/config.js`. This repository is a static website, so any client-side config is publicly viewable.
 
 ### 4. Host for free
 
@@ -81,6 +91,8 @@ The Google Form can collect phone numbers and parent contact info, but the publi
 
 This build also adds a coach approval gate: athletes are not shown publicly until the `publish` column in the `Athletes` sheet is set to `yes`.
 
+Direct coach phone numbers and emails can stay hidden on the public site. The recommended setup is to use a separate recruiter inquiry form and keep `displayCoachDirectContact` set to `false`. If you place a phone number or email in `js/config.js`, treat it as public information.
+
 ### Photos
 
 Google Form file uploads usually require respondents to sign in with Google. If you want no-login submissions, use the `Photo URL` field instead and have athletes paste a headshot link.
@@ -96,3 +108,11 @@ If you want, the next step can be a Hudl import helper that converts exported st
 ### Logo
 
 This build includes a custom Clarksburg-themed SVG mark in `assets/clarksburg-football-mark.svg` so the site is usable immediately. If you have the official school logo file, replace that SVG with your official asset and keep the same filename for an instant swap.
+
+### Hardening notes
+
+- Athlete profile text is sanitized before it is rendered on the public site.
+- Public links and image URLs are restricted to safe URL formats.
+- The page includes a restrictive Content Security Policy to reduce injection risk.
+- Coach-only publication control stays in the `publish` column of the `Athletes` sheet.
+- Coach public notes are preserved during syncs and are no longer collected from athletes through the intake form.

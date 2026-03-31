@@ -304,6 +304,17 @@ select {
   line-height: 1.7;
 }
 
+.contact-button {
+  width: 100%;
+  margin-top: 0.9rem;
+}
+
+.direct-contact-list {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
 .chip {
   display: inline-flex;
   padding: 0.55rem 0.8rem;
