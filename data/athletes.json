@@ -1,0 +1,77 @@
+[
+  {
+    "id": "micah-jackson-2026",
+    "name": "Micah Jackson",
+    "graduationYear": 2026,
+    "jerseyNumber": "1",
+    "positions": ["QB", "ATH"],
+    "height": "6'2\"",
+    "weight": "198 lbs",
+    "gpa": "3.84",
+    "why": "I compete to lead my team, represent Clarksburg with pride, and prove that discipline off the field should match discipline on it.",
+    "hudlUrl": "https://www.hudl.com/",
+    "highlightUrl": "https://www.hudl.com/",
+    "photoUrl": "./assets/headshot-placeholder.svg",
+    "hometown": "Clarksburg, MD",
+    "academicInterests": "Business, Communications",
+    "statsSummary": "2,145 total yards, 24 total TD, 67% completion rate",
+    "coachNote": "Poised decision-maker with strong pocket movement and enough mobility to extend plays.",
+    "achievements": ["Team Captain", "All-County Watch List"],
+    "stats": {
+      "passingYards": "1,865",
+      "passingTouchdowns": "19",
+      "rushingYards": "280",
+      "rushingTouchdowns": "5"
+    }
+  },
+  {
+    "id": "isaiah-brooks-2027",
+    "name": "Isaiah Brooks",
+    "graduationYear": 2027,
+    "jerseyNumber": "11",
+    "positions": ["WR", "DB"],
+    "height": "6'0\"",
+    "weight": "182 lbs",
+    "gpa": "3.62",
+    "why": "I want college coaches to see that I bring toughness, consistency, and real love for the game every day.",
+    "hudlUrl": "https://www.hudl.com/",
+    "highlightUrl": "https://www.hudl.com/",
+    "photoUrl": "./assets/headshot-placeholder.svg",
+    "hometown": "Clarksburg, MD",
+    "academicInterests": "Sports Management, Marketing",
+    "statsSummary": "41 receptions, 812 receiving yards, 9 TD, 22 tackles",
+    "coachNote": "Explosive change-of-direction athlete who contributes on both sides of the ball.",
+    "achievements": ["Two-way Starter", "7-on-7 MVP"],
+    "stats": {
+      "receptions": "41",
+      "receivingYards": "812",
+      "touchdowns": "9",
+      "tackles": "22"
+    }
+  },
+  {
+    "id": "elijah-banks-2028",
+    "name": "Elijah Banks",
+    "graduationYear": 2028,
+    "jerseyNumber": "55",
+    "positions": ["OL", "DL"],
+    "height": "6'3\"",
+    "weight": "255 lbs",
+    "gpa": "3.47",
+    "why": "My why is simple: I want to outwork everybody in front of me and build a future for my family through football and academics.",
+    "hudlUrl": "https://www.hudl.com/",
+    "highlightUrl": "https://www.hudl.com/",
+    "photoUrl": "./assets/headshot-placeholder.svg",
+    "hometown": "Clarksburg, MD",
+    "academicInterests": "Engineering, Construction Management",
+    "statsSummary": "31 pancake blocks, 9 TFL allowed in 11 games, 18 tackles",
+    "coachNote": "Physical frame with upside. Strong hands, coachable, and plays through the whistle.",
+    "achievements": ["Underclassman Anchor", "Weight Room Leader"],
+    "stats": {
+      "pancakeBlocks": "31",
+      "benchMax": "275 lbs",
+      "squatMax": "405 lbs",
+      "tackles": "18"
+    }
+  }
+]

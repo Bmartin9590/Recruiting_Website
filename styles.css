@@ -1,0 +1,629 @@
+:root {
+  --navy-950: #071526;
+  --navy-900: #0d2240;
+  --navy-800: #16335a;
+  --carolina-500: #4b9cd3;
+  --carolina-400: #79b8e4;
+  --carolina-300: #a9d4ef;
+  --white: #f5fbff;
+  --white-strong: rgba(255, 255, 255, 0.84);
+  --white-soft: rgba(255, 255, 255, 0.18);
+  --border-soft: rgba(255, 255, 255, 0.22);
+  --text-main: #eef6ff;
+  --text-muted: #bdd4e9;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  --radius-lg: 28px;
+  --radius-md: 22px;
+  --radius-sm: 16px;
+  --font-display: "SF Pro Display", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "SF Pro Text", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top left, rgba(75, 156, 211, 0.26), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(121, 184, 228, 0.18), transparent 30%),
+    linear-gradient(160deg, #08121f 0%, #112645 46%, #08182e 100%);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.page-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.background-orb {
+  position: fixed;
+  width: 32rem;
+  height: 32rem;
+  border-radius: 50%;
+  filter: blur(18px);
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.orb-one {
+  top: -8rem;
+  left: -8rem;
+  background: radial-gradient(circle, rgba(121, 184, 228, 0.4), transparent 62%);
+}
+
+.orb-two {
+  right: -6rem;
+  bottom: 8rem;
+  background: radial-gradient(circle, rgba(75, 156, 211, 0.42), transparent 58%);
+}
+
+.background-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 88%);
+  pointer-events: none;
+}
+
+.content,
+.topbar {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar,
+.content {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-logo-frame {
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  padding: 0.45rem;
+  border-radius: 24px;
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(235, 244, 252, 0.84)),
+    rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 14px 32px rgba(0, 0, 0, 0.2);
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+}
+
+.brand-lockup h1,
+.hero-copy h2,
+.filters h3,
+.section-heading h3,
+.workflow-card h4,
+.athlete-name {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.brand-lockup h1 {
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--carolina-300);
+}
+
+.topbar-actions,
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(24px) saturate(165%);
+  -webkit-backdrop-filter: blur(24px) saturate(165%);
+  border-radius: var(--radius-lg);
+}
+
+.primary-button,
+.ghost-button,
+.card-button,
+.modal-close {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.primary-button,
+.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.8rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.primary-button {
+  color: #08213f;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--white), var(--carolina-300));
+}
+
+.ghost-button,
+.card-button {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.primary-button:hover,
+.ghost-button:hover,
+.card-button:hover,
+.modal-close:hover {
+  transform: translateY(-1px);
+}
+
+.content {
+  padding: 2rem 0 4rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.95fr);
+  gap: 1.25rem;
+}
+
+.hero-copy,
+.hero-side,
+.filters,
+.workflow,
+.athlete-card,
+.workflow-card {
+  padding: 1.4rem;
+}
+
+.hero-copy h2 {
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 0.96;
+  max-width: 12ch;
+}
+
+.hero-text {
+  max-width: 56ch;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.metric-card {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(6, 18, 34, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-value {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.metric-label {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.signal-list {
+  margin: 1.25rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.coach-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.contact-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(7, 21, 38, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.chip {
+  display: inline-flex;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  font-size: 0.9rem;
+}
+
+.filters,
+.workflow {
+  margin-top: 1.25rem;
+}
+
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.filter-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.filter-controls input,
+.filter-controls select {
+  min-height: 48px;
+  padding: 0.8rem 0.9rem;
+  color: var(--white);
+  background: rgba(7, 21, 38, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  outline: none;
+}
+
+.athlete-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.athlete-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.athlete-photo-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  aspect-ratio: 1 / 1.1;
+}
+
+.athlete-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: linear-gradient(135deg, rgba(75, 156, 211, 0.18), rgba(255, 255, 255, 0.1));
+}
+
+.athlete-class {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(6, 18, 34, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.85rem;
+}
+
+.card-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.athlete-number,
+.athlete-meta,
+.athlete-summary {
+  color: var(--text-muted);
+}
+
+.athlete-meta,
+.athlete-summary {
+  margin: 0.35rem 0 0;
+  line-height: 1.6;
+}
+
+.card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+}
+
+.stat-pill {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  font-size: 0.85rem;
+}
+
+.card-button {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  min-height: 44px;
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.workflow-card {
+  min-height: 100%;
+  border-radius: var(--radius-md);
+  background: rgba(7, 21, 38, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.step-number {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  color: var(--carolina-300);
+}
+
+.profile-modal {
+  width: min(960px, calc(100% - 1rem));
+  border: none;
+  padding: 0;
+  border-radius: 32px;
+  background: rgba(8, 18, 31, 0.96);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4);
+}
+
+.profile-modal::backdrop {
+  background: rgba(1, 6, 14, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.modal-content {
+  padding: 1.4rem;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+.profile-image {
+  width: 100%;
+  aspect-ratio: 1 / 1.15;
+  object-fit: cover;
+  border-radius: 28px;
+}
+
+.profile-panel {
+  padding: 1.2rem;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.profile-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.profile-subtitle,
+.profile-copy {
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.profile-quickfacts,
+.profile-links,
+.profile-stats-grid,
+.profile-tags {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-quickfacts {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1.25rem 0;
+}
+
+.fact-box,
+.stat-box {
+  padding: 0.9rem;
+  border-radius: 18px;
+  background: rgba(6, 18, 34, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.fact-label,
+.stat-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.fact-value,
+.stat-value {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.profile-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1rem 0;
+}
+
+.profile-stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.profile-tags {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-top: 1rem;
+}
+
+.tag-box {
+  padding: 0.9rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .profile-layout,
+  .athlete-grid,
+  .workflow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-controls,
+  .hero-metrics,
+  .profile-quickfacts,
+  .profile-links,
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .content,
+  .topbar {
+    width: min(100% - 1rem, 1180px);
+  }
+
+  .brand-lockup {
+    align-items: flex-start;
+  }
+
+  .filter-controls,
+  .hero-metrics,
+  .profile-quickfacts,
+  .profile-links,
+  .profile-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar-actions,
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button,
+  .ghost-button {
+    width: 100%;
+  }
+}

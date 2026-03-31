@@ -1,0 +1,14 @@
+<svg width="800" height="900" viewBox="0 0 800 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="900" rx="48" fill="url(#paint0_linear_1_3)"/>
+  <circle cx="400" cy="290" r="150" fill="#FFFFFF" fill-opacity="0.10"/>
+  <path d="M400 470C268 470 160 578 160 710V778H640V710C640 578 532 470 400 470Z" fill="#FFFFFF" fill-opacity="0.10"/>
+  <path d="M400 460C283 460 188 553 188 670V746H612V670C612 553 517 460 400 460ZM400 186C338 186 288 236 288 298C288 360 338 410 400 410C462 410 512 360 512 298C512 236 462 186 400 186Z" fill="#EAF6FF" fill-opacity="0.88"/>
+  <text x="400" y="835" text-anchor="middle" fill="#EAF6FF" font-size="42" font-family="Avenir Next, Arial, sans-serif" font-weight="700" letter-spacing="6">ATHLETE PHOTO</text>
+  <defs>
+    <linearGradient id="paint0_linear_1_3" x1="54" y1="34" x2="760" y2="856" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16335A"/>
+      <stop offset="0.5" stop-color="#0D2240"/>
+      <stop offset="1" stop-color="#4B9CD3"/>
+    </linearGradient>
+  </defs>
+</svg>

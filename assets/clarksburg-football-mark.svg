@@ -1,0 +1,18 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shield" x1="27" y1="20" x2="212" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.94"/>
+      <stop offset="0.45" stop-color="#A9D4EF"/>
+      <stop offset="1" stop-color="#4B9CD3"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="56" y1="46" x2="182" y2="194" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16335A"/>
+      <stop offset="1" stop-color="#071526"/>
+    </linearGradient>
+  </defs>
+  <path d="M120 16L204 46V114C204 163 172 205 120 224C68 205 36 163 36 114V46L120 16Z" fill="url(#shield)"/>
+  <path d="M120 34L188 58V111C188 149 164 184 120 202C76 184 52 149 52 111V58L120 34Z" fill="url(#inner)"/>
+  <path d="M77 86C90 71 104 64 120 64C136 64 150 71 163 86L145 99C137 90 129 85 120 85C111 85 103 90 95 99C88 107 84 117 84 128C84 139 88 149 96 157C104 165 112 169 120 169C131 169 140 164 148 154L166 167C153 183 138 191 120 191C102 191 87 185 74 172C61 159 54 144 54 128C54 112 61 98 77 86Z" fill="#A9D4EF"/>
+  <text x="120" y="134" text-anchor="middle" fill="#071526" font-size="52" font-family="Avenir Next, Arial, sans-serif" font-weight="700" letter-spacing="4">CHS</text>
+  <text x="120" y="219" text-anchor="middle" fill="#071526" font-size="14" font-family="Avenir Next, Arial, sans-serif" font-weight="700" letter-spacing="3">COYOTES</text>
+</svg>

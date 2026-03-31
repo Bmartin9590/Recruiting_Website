@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clarksburg Football Recruiting</title>
+    <meta
+      name="description"
+      content="Clarksburg High School Football recruiting hub for student-athlete profiles, film, measurables, and academics."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="background-orb orb-one"></div>
+      <div class="background-orb orb-two"></div>
+      <div class="background-grid"></div>
+
+      <header class="topbar glass-panel">
+        <div class="brand-lockup">
+          <div class="brand-logo-frame">
+            <img
+              src="./assets/clarksburg-logo.jpeg"
+              alt="Clarksburg High School logo"
+              class="brand-logo"
+            />
+          </div>
+          <div>
+            <p class="eyebrow">Clarksburg High School</p>
+            <h1>Football Recruiting Hub</h1>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <a class="ghost-button" href="#workflow">Workflow</a>
+          <a
+            class="primary-button"
+            id="submit-profile-button"
+            href="#"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Submit Athlete Profile
+          </a>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="hero">
+          <div class="hero-copy glass-panel">
+            <p class="eyebrow">Clarksburg, Maryland</p>
+            <h2>One recruiting workflow for film, academics, measurables, and athlete stories.</h2>
+            <p class="hero-text">
+              Stop chasing spreadsheets and long email chains. Athletes submit one form, coaches review one roster,
+              and college programs get a clean public profile page with Hudl links and key stats.
+            </p>
+
+            <div class="hero-actions">
+              <a class="primary-button" href="#athletes">View Athlete Profiles</a>
+              <a class="ghost-button" href="#workflow">See How It Works</a>
+            </div>
+
+            <div class="hero-metrics" id="hero-metrics"></div>
+          </div>
+
+          <aside class="hero-side glass-panel">
+            <p class="eyebrow">What This Solves</p>
+            <ul class="signal-list">
+              <li>One intake form for every athlete profile.</li>
+              <li>One public recruiting page instead of scattered PDFs and sheets.</li>
+              <li>One place for Hudl, GPA, measurables, and coach-ready notes.</li>
+            </ul>
+
+            <div class="coach-card">
+              <span class="chip">Apple-style glass theme</span>
+              <span class="chip">GitHub Pages ready</span>
+              <span class="chip">Google Forms workflow</span>
+            </div>
+
+            <div class="contact-card" id="coach-contact"></div>
+          </aside>
+        </section>
+
+        <section class="filters glass-panel" id="athletes">
+          <div>
+            <p class="eyebrow">Recruiting Board</p>
+            <h3>Featured Student-Athletes</h3>
+          </div>
+
+          <div class="filter-controls">
+            <label>
+              <span>Search</span>
+              <input id="search-input" type="search" placeholder="Name, position, or stat" />
+            </label>
+            <label>
+              <span>Position</span>
+              <select id="position-filter">
+                <option value="all">All positions</option>
+              </select>
+            </label>
+            <label>
+              <span>Class</span>
+              <select id="class-filter">
+                <option value="all">All classes</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="athlete-grid" id="athlete-grid"></section>
+
+        <section class="workflow glass-panel" id="workflow">
+          <div class="section-heading">
+            <p class="eyebrow">Workflow</p>
+            <h3>Google Form to website in three clean steps</h3>
+          </div>
+
+          <div class="workflow-grid">
+            <article class="workflow-card">
+              <span class="step-number">01</span>
+              <h4>Athlete fills out one Google Form</h4>
+              <p>
+                Capture name, photo, position, class year, height, weight, GPA, Hudl, contact info, honors,
+                and the athlete's "why" in one place.
+              </p>
+            </article>
+
+            <article class="workflow-card">
+              <span class="step-number">02</span>
+              <h4>Google Sheet becomes the master roster</h4>
+              <p>
+                Responses land in a sheet, and the included Apps Script turns them into a clean public athlete feed
+                while keeping private contact fields out of the website.
+              </p>
+            </article>
+
+            <article class="workflow-card">
+              <span class="step-number">03</span>
+              <h4>Static site reads the athlete feed</h4>
+              <p>
+                Host the site free on GitHub Pages. Point it to the Apps Script JSON endpoint and your roster updates
+                without rebuilding the website every time.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="profile-modal" id="profile-modal">
+      <button class="modal-close" id="modal-close" aria-label="Close athlete profile">×</button>
+      <div class="modal-content" id="modal-content"></div>
+    </dialog>
+
+    <template id="athlete-card-template">
+      <article class="athlete-card glass-panel">
+        <div class="athlete-photo-wrap">
+          <img class="athlete-photo" alt="" />
+          <span class="athlete-class"></span>
+        </div>
+        <div class="athlete-copy">
+          <div class="card-topline">
+            <h4 class="athlete-name"></h4>
+            <span class="athlete-number"></span>
+          </div>
+          <p class="athlete-meta"></p>
+          <p class="athlete-summary"></p>
+          <div class="card-stats"></div>
+          <button class="ghost-button card-button" type="button">View Profile</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="./js/config.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
