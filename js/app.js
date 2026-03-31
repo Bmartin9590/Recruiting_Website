@@ -58,6 +58,41 @@ function safeUrl(value, options = {}) {
   }
 }
 
+function normalizeXHandle(value) {
+  const raw = safeText(value);
+
+  if (!raw) {
+    return "";
+  }
+
+  if (raw.includes("x.com/") || raw.includes("twitter.com/")) {
+    const safeProfileUrl = safeUrl(raw);
+    if (!safeProfileUrl) {
+      return "";
+    }
+
+    try {
+      const parsed = new URL(safeProfileUrl);
+      const handle = parsed.pathname.replace(/^\/+/, "").split("/")[0];
+      return handle ? `@${handle.replace(/^@+/, "")}` : "";
+    } catch {
+      return "";
+    }
+  }
+
+  const normalized = raw.replace(/^@+/, "").replace(/[^a-zA-Z0-9_]/g, "");
+  return normalized ? `@${normalized}` : "";
+}
+
+function xProfileUrl(handle) {
+  const normalized = normalizeXHandle(handle);
+  if (!normalized) {
+    return "";
+  }
+
+  return `https://x.com/${normalized.slice(1)}`;
+}
+
 function createNode(tagName, options = {}) {
   const { className = "", text = "", attrs = {} } = options;
   const node = document.createElement(tagName);
@@ -153,6 +188,7 @@ function normalizeAthlete(rawAthlete) {
     weight: safeText(rawAthlete.weight, "Not listed"),
     gpa: safeText(rawAthlete.gpa, "Not listed"),
     why: safeText(rawAthlete.why, "Why statement coming soon."),
+    xHandle: normalizeXHandle(rawAthlete.xHandle),
     hudlUrl: hudlUrl,
     highlightUrl: highlightUrl,
     photoUrl: photoUrl,
@@ -259,6 +295,7 @@ function athleteMatchesFilters(athlete) {
   const searchTarget = [
     athlete.name,
     athlete.positions.join(" "),
+    athlete.xHandle,
     athlete.statsSummary,
     athlete.coachNote,
     athlete.achievements.join(" "),
@@ -415,6 +452,7 @@ function openProfile(athlete) {
   const links = [
     buildButtonLink({ label: "Open Hudl", href: athlete.hudlUrl, className: "primary-button" }),
     buildButtonLink({ label: "Watch Highlights", href: athlete.highlightUrl, className: "ghost-button" }),
+    buildButtonLink({ label: athlete.xHandle || "View X Profile", href: xProfileUrl(athlete.xHandle), className: "ghost-button" }),
   ].filter(Boolean);
 
   if (links.length) {
@@ -437,6 +475,7 @@ function openProfile(athlete) {
   }
 
   const tags = [
+    athlete.xHandle && `X: ${athlete.xHandle}`,
     athlete.academicInterests && `Academic interests: ${athlete.academicInterests}`,
     athlete.achievements[0] && athlete.achievements[0],
     athlete.achievements[1] && athlete.achievements[1],

@@ -25,6 +25,7 @@ function createRecruitingWorkflow() {
   addShortAnswer_(form, "Hometown", false);
   addShortAnswer_(form, "Athlete Cell Phone", false);
   addShortAnswer_(form, "Athlete Email", false);
+  addShortAnswer_(form, "X Handle", false);
   addShortAnswer_(form, "Parent / Guardian Name", false);
   addShortAnswer_(form, "Parent / Guardian Email", false);
   addShortAnswer_(form, "Parent / Guardian Phone", false);
@@ -146,6 +147,7 @@ function upsertAthleteSheet_(spreadsheet) {
     "weight",
     "gpa",
     "why",
+    "xHandle",
     "hudlUrl",
     "highlightUrl",
     "photoUrl",
@@ -203,6 +205,7 @@ function mapRowToAthlete_(headers, row) {
     weight: safeString_(entry["Weight"]),
     gpa: safeString_(entry["GPA"]),
     why: safeString_(entry["Why do you play football?"]),
+    xHandle: safeString_(entry["X Handle"]),
     hudlUrl: safeString_(entry["Hudl Profile URL"]),
     highlightUrl: safeString_(entry["Highlight Video URL"]),
     photoUrl: safeString_(photoUrl),
@@ -236,6 +239,7 @@ function flattenAthleteForSheet_(athlete, overrides) {
     athlete.weight,
     athlete.gpa,
     athlete.why,
+    athlete.xHandle,
     athlete.hudlUrl,
     athlete.highlightUrl,
     athlete.photoUrl,
@@ -288,6 +292,7 @@ function mapAthleteSheetRowToJson_(headers, row) {
     weight: safeString_(entry.weight),
     gpa: safeString_(entry.gpa),
     why: safeString_(entry.why),
+    xHandle: safeString_(entry.xHandle),
     hudlUrl: safeString_(entry.hudlUrl),
     highlightUrl: safeString_(entry.highlightUrl),
     photoUrl: safeString_(entry.photoUrl),

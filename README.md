@@ -93,6 +93,8 @@ This build also adds a coach approval gate: athletes are not shown publicly unti
 
 Direct coach phone numbers and emails can stay hidden on the public site. The recommended setup is to use a separate recruiter inquiry form and keep `displayCoachDirectContact` set to `false`. If you place a phone number or email in `js/config.js`, treat it as public information.
 
+If you want recruiters to contact athletes on their own, the safer public option is to collect an athlete-approved `X Handle` and display that on the profile instead of phone numbers.
+
 ### Photos
 
 Google Form file uploads usually require respondents to sign in with Google. If you want no-login submissions, use the `Photo URL` field instead and have athletes paste a headshot link.

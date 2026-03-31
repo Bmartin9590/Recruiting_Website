@@ -29,6 +29,9 @@ Then open `http://localhost:8000`.
 - The public site automatically reflects approved fields from the sheet feed.
 - Recruiters use the recruiter inquiry form instead of scraping direct phone numbers from the site.
 
+Public-safe athlete contact option:
+- Add each athlete's approved `X Handle` in the athlete form so recruiters can message them without exposing phone numbers.
+
 ## Suggested Next Additions
 
 - Add an `Offers` field
