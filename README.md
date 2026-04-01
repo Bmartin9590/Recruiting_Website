@@ -27,6 +27,8 @@ The site is plain HTML, CSS, and JavaScript so it can be hosted free on GitHub P
 4. Replace the default `appsscript.json` manifest with the one in this repo.
 5. Run `createRecruitingWorkflow()` once.
 6. Approve Google permissions.
+7. Open the generated Google Form and add one `File upload` question under the `Athlete Headshot` section.
+8. Title that question `Upload Athlete Headshot` and use help text like: `Upload a clear head-and-shoulders photo from your phone. Use a single-athlete photo with no filters, sunglasses, or group shots.`
 
 That creates:
 
@@ -97,7 +99,7 @@ If you want recruiters to contact athletes on their own, the safer public option
 
 ### Photos
 
-Google Form file uploads usually require respondents to sign in with Google. If you want no-login submissions, use the `Photo URL` field instead and have athletes paste a headshot link.
+Google Form file uploads require athletes to sign in with Google, which works well for your school since every student already has an account. The script now adds an `Athlete Headshot` section, and you finish the setup by adding the `Upload Athlete Headshot` file-upload question manually in the form editor.
 
 The Apps Script includes a `MAKE_PHOTOS_PUBLIC` flag. Leave it `false` unless you are comfortable making uploaded athlete photos viewable on the public site.
 

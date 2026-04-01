@@ -13,8 +13,11 @@ function createRecruitingWorkflow() {
   form.setCollectEmail(true);
 
   addShortAnswer_(form, "Athlete Full Name", true);
-  addFileUpload_(form, "Headshot / Athlete Photo", false);
-  addShortAnswer_(form, "Photo URL (optional if not uploading)", false);
+  addSectionHeader_(
+    form,
+    "Athlete Headshot",
+    "After the form is created, add a File upload question here in the Google Forms editor. Use a clear head-and-shoulders photo from a phone, with no filters, sunglasses, or group shots."
+  );
   addShortAnswer_(form, "Graduation Year", true);
   addShortAnswer_(form, "Jersey Number", false);
   addShortAnswer_(form, "Primary Position", true);
@@ -189,9 +192,8 @@ function mapRowToAthlete_(headers, row) {
     entry[header] = row[index];
   });
 
-  const photoUploadValue = entry["Headshot / Athlete Photo"];
-  const photoUrl =
-    entry["Photo URL (optional if not uploading)"] || normalizePhotoValue_(photoUploadValue);
+  const photoUploadValue = entry["Headshot / Athlete Photo"] || entry["Upload Athlete Headshot"];
+  const photoUrl = normalizePhotoValue_(photoUploadValue);
   const primaryPosition = safeString_(entry["Primary Position"]);
   const secondaryPosition = safeString_(entry["Secondary Position"]);
 
@@ -358,11 +360,10 @@ function addParagraph_(form, title, required) {
   form.addParagraphTextItem().setTitle(title).setRequired(required);
 }
 
-function addFileUpload_(form, title, required) {
-  try {
-    form.addFileUploadItem().setTitle(title).setRequired(required);
-  } catch (error) {
-    Logger.log("File upload item unavailable, relying on the photo URL field instead: " + error);
+function addSectionHeader_(form, title, helpText) {
+  const item = form.addSectionHeaderItem().setTitle(title);
+  if (helpText) {
+    item.setHelpText(helpText);
   }
 }
 
