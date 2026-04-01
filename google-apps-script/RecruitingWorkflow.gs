@@ -16,7 +16,7 @@ function createRecruitingWorkflow() {
   addSectionHeader_(
     form,
     "Athlete Headshot",
-    "After the form is created, add a File upload question here in the Google Forms editor. Use a clear head-and-shoulders photo from a phone, with no filters, sunglasses, or group shots."
+    "After the form is created, add a File upload question here in the Google Forms editor. Athletes should upload a clear head-and-shoulders photo from their phone, with no filters, sunglasses, or group shots."
   );
   addShortAnswer_(form, "Graduation Year", true);
   addShortAnswer_(form, "Jersey Number", false);

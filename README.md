@@ -28,7 +28,7 @@ The site is plain HTML, CSS, and JavaScript so it can be hosted free on GitHub P
 5. Run `createRecruitingWorkflow()` once.
 6. Approve Google permissions.
 7. Open the generated Google Form and add one `File upload` question under the `Athlete Headshot` section.
-8. Title that question `Upload Athlete Headshot` and use help text like: `Upload a clear head-and-shoulders photo from your phone. Use a single-athlete photo with no filters, sunglasses, or group shots.`
+8. Title that question `Upload Athlete Headshot` and use help text like: `Athletes should upload a clear head-and-shoulders photo from their phone. Use a single-athlete photo with no filters, sunglasses, or group shots.`
 
 That creates:
 

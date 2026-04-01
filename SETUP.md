@@ -15,7 +15,7 @@ Then open `http://localhost:8000`.
 1. Run `createRecruitingWorkflow()` in Apps Script.
 2. Run `createRecruiterInquiryForm()` if you want recruiters to contact staff through a private intake form instead of seeing direct phone numbers.
 3. Open the generated athlete Google Form and add a `File upload` question under the `Athlete Headshot` section.
-4. Title that question `Upload Athlete Headshot` and keep the help text focused on a clear head-and-shoulders photo from a phone.
+4. Title that question `Upload Athlete Headshot` and keep the help text focused on athletes uploading a clear head-and-shoulders photo from their phone.
 5. Copy the public Google Form URL into `js/config.js`.
 6. Copy the recruiter inquiry form URL into `recruiterInquiryUrl` in `js/config.js`.
 7. Deploy the Apps Script as a web app and copy the web app URL into `js/config.js`.
