@@ -4,6 +4,8 @@ const SHEET_NAME = "Athletes";
 const MAKE_PHOTOS_PUBLIC = false;
 const SPREADSHEET_ID_PROPERTY = "RECRUITING_SPREADSHEET_ID";
 const FORM_ID_PROPERTY = "RECRUITING_FORM_ID";
+const EXISTING_RECRUITING_SPREADSHEET_ID = "";
+const EXISTING_RECRUITING_FORM_ID = "";
 
 function createRecruitingWorkflow() {
   const form = FormApp.create(FORM_TITLE);
@@ -11,6 +13,7 @@ function createRecruitingWorkflow() {
     "Complete this recruiting profile so Clarksburg High School coaches can publish a college-ready profile page."
   );
   form.setCollectEmail(true);
+  form.setAllowResponseEdits(true);
 
   addShortAnswer_(form, "Athlete Full Name", true);
   addSectionHeader_(
@@ -95,7 +98,7 @@ function createRecruiterInquiryForm() {
 
 function syncAthleteSheet() {
   const spreadsheet = getRecruitingSpreadsheet_();
-  const responseSheet = spreadsheet.getSheets()[0];
+  const responseSheet = getResponseSheet_(spreadsheet);
   const athleteSheet = upsertAthleteSheet_(spreadsheet);
   const overridesMap = getExistingOverridesMap_(athleteSheet);
   const rows = responseSheet.getDataRange().getValues();
@@ -115,6 +118,101 @@ function syncAthleteSheet() {
 
   athleteSheet.getRange(2, 1, Math.max(athleteSheet.getMaxRows() - 1, 1), athleteSheet.getLastColumn()).clearContent();
   athleteSheet.getRange(2, 1, values.length, values[0].length).setValues(values);
+}
+
+function repairRecruitingWorkflow() {
+  const spreadsheet = getRecruitingSpreadsheet_();
+  upsertAthleteSheet_(spreadsheet);
+
+  ScriptApp.getProjectTriggers()
+    .filter(function (trigger) {
+      return trigger.getHandlerFunction() === "syncAthleteSheet";
+    })
+    .forEach(function (trigger) {
+      ScriptApp.deleteTrigger(trigger);
+    });
+
+  ScriptApp.newTrigger("syncAthleteSheet").forSpreadsheet(spreadsheet).onFormSubmit().create();
+  syncAthleteSheet();
+
+  Logger.log("Recruiting workflow repaired for spreadsheet: " + spreadsheet.getUrl());
+}
+
+function adoptExistingRecruitingSpreadsheet() {
+  if (!safeString_(EXISTING_RECRUITING_SPREADSHEET_ID)) {
+    throw new Error("Set EXISTING_RECRUITING_SPREADSHEET_ID at the top of the script first.");
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(EXISTING_RECRUITING_SPREADSHEET_ID);
+  PropertiesService.getScriptProperties().setProperty(SPREADSHEET_ID_PROPERTY, spreadsheet.getId());
+  if (safeString_(EXISTING_RECRUITING_FORM_ID)) {
+    PropertiesService.getScriptProperties().setProperty(FORM_ID_PROPERTY, EXISTING_RECRUITING_FORM_ID);
+  }
+
+  upsertAthleteSheet_(spreadsheet);
+
+  ScriptApp.getProjectTriggers()
+    .filter(function (trigger) {
+      return trigger.getHandlerFunction() === "syncAthleteSheet";
+    })
+    .forEach(function (trigger) {
+      ScriptApp.deleteTrigger(trigger);
+    });
+
+  ScriptApp.newTrigger("syncAthleteSheet").forSpreadsheet(spreadsheet).onFormSubmit().create();
+  syncAthleteSheet();
+
+  Logger.log("Now using existing recruiting spreadsheet: " + spreadsheet.getUrl());
+}
+
+function sendEditLinksToAllRespondents() {
+  const form = getRecruitingForm_();
+  const responses = form.getResponses();
+  let sentCount = 0;
+  const skipped = [];
+
+  form.setAllowResponseEdits(true);
+
+  responses.forEach(function (response) {
+    const email = safeString_(response.getRespondentEmail());
+    const editUrl = safeString_(response.getEditResponseUrl());
+    const athleteName = getAthleteNameFromResponse_(response);
+
+    if (!email || !editUrl) {
+      skipped.push(athleteName || email || response.getId() || "unknown response");
+      return;
+    }
+
+    MailApp.sendEmail({
+      to: email,
+      subject: "Update your Clarksburg Football recruiting profile",
+      htmlBody: buildEditLinkEmail_(athleteName, editUrl),
+      name: "Clarksburg Football Recruiting",
+    });
+
+    sentCount += 1;
+  });
+
+  Logger.log("Sent edit links: " + sentCount);
+  Logger.log("Skipped responses: " + JSON.stringify(skipped));
+}
+
+function debugRecruitingWorkflow() {
+  const spreadsheet = getRecruitingSpreadsheet_();
+  const responseSheet = getResponseSheet_(spreadsheet);
+  const rows = responseSheet.getDataRange().getValues();
+  const headers = rows.length ? rows[0] : [];
+  const expectedHeaders = getExpectedResponseHeaders_();
+  const missingHeaders = expectedHeaders.filter(function (header) {
+    return headers.indexOf(header) === -1;
+  });
+
+  Logger.log("Spreadsheet URL: " + spreadsheet.getUrl());
+  Logger.log("Response sheet: " + responseSheet.getName());
+  Logger.log("Header count: " + headers.length);
+  Logger.log("Headers: " + JSON.stringify(headers));
+  Logger.log("Missing expected headers: " + JSON.stringify(missingHeaders));
+  Logger.log("Response row count: " + Math.max(rows.length - 1, 0));
 }
 
 function doGet(e) {
@@ -186,46 +284,120 @@ function upsertAthleteSheet_(spreadsheet) {
   return athleteSheet;
 }
 
+function getResponseSheet_(spreadsheet) {
+  const sheets = spreadsheet.getSheets().filter(function (sheet) {
+    return sheet.getName() !== SHEET_NAME;
+  });
+
+  const preferredSheet = sheets.find(function (sheet) {
+    const headers = getSheetHeaders_(sheet);
+    return (
+      headers.indexOf("Athlete Full Name") !== -1 &&
+      headers.indexOf("Graduation Year") !== -1 &&
+      headers.indexOf("Hudl Profile URL") !== -1
+    );
+  });
+
+  if (preferredSheet) {
+    return preferredSheet;
+  }
+
+  if (sheets.length) {
+    return sheets[0];
+  }
+
+  throw new Error("No response sheet found. Make sure the Google Form is linked to the recruiting spreadsheet.");
+}
+
+function getSheetHeaders_(sheet) {
+  if (sheet.getLastRow() < 1 || sheet.getLastColumn() < 1) {
+    return [];
+  }
+
+  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+}
+
+function getExpectedResponseHeaders_() {
+  return [
+    "Athlete Full Name",
+    "Graduation Year",
+    "Jersey Number",
+    "Primary Position",
+    "Secondary Position",
+    "Height",
+    "Weight",
+    "GPA",
+    "Hometown",
+    "Athlete Cell Phone",
+    "Athlete Email",
+    "X Handle",
+    "Parent / Guardian Name",
+    "Parent / Guardian Email",
+    "Parent / Guardian Phone",
+    "Why do you play football?",
+    "Hudl Profile URL",
+    "Highlight Video URL",
+    "Academic Interests / Intended Major",
+    "Honors / Awards / Recruiting Notes",
+    "Season Stats Summary",
+    "Passing Yards",
+    "Passing Touchdowns",
+    "Rushing Yards",
+    "Rushing Touchdowns",
+    "Receptions",
+    "Receiving Yards",
+    "Receiving / Total Touchdowns",
+    "Tackles",
+    "Interceptions",
+    "Bench Max",
+    "Squat Max",
+  ];
+}
+
 function mapRowToAthlete_(headers, row) {
   const entry = {};
   headers.forEach((header, index) => {
     entry[header] = row[index];
   });
 
-  const photoUploadValue = entry["Headshot / Athlete Photo"] || entry["Upload Athlete Headshot"];
+  const photoUploadValue = getFirstValue_(entry, [
+    "Headshot / Athlete Photo",
+    "Upload Athlete Headshot",
+    "Profile Picture (Appropriate Pic!)",
+  ]);
   const photoUrl = normalizePhotoValue_(photoUploadValue);
-  const primaryPosition = safeString_(entry["Primary Position"]);
-  const secondaryPosition = safeString_(entry["Secondary Position"]);
+  const primaryPosition = getFirstValue_(entry, ["Primary Position"]);
+  const secondaryPosition = getFirstValue_(entry, ["Secondary Position"]);
 
   return {
-    id: buildSlug_(entry["Athlete Full Name"], entry["Graduation Year"]),
-    name: safeString_(entry["Athlete Full Name"]),
-    graduationYear: safeString_(entry["Graduation Year"]),
-    jerseyNumber: safeString_(entry["Jersey Number"]),
+    id: buildSlug_(getFirstValue_(entry, ["Athlete Full Name"]), getFirstValue_(entry, ["Graduation Year"])),
+    name: getFirstValue_(entry, ["Athlete Full Name"]),
+    graduationYear: getFirstValue_(entry, ["Graduation Year"]),
+    jerseyNumber: getFirstValue_(entry, ["Jersey Number"]),
     positions: [primaryPosition, secondaryPosition].filter(Boolean).join(" / "),
-    height: safeString_(entry["Height"]),
-    weight: safeString_(entry["Weight"]),
-    gpa: safeString_(entry["GPA"]),
-    why: safeString_(entry["Why do you play football?"]),
-    xHandle: safeString_(entry["X Handle"]),
-    hudlUrl: safeString_(entry["Hudl Profile URL"]),
-    highlightUrl: safeString_(entry["Highlight Video URL"]),
+    height: getFirstValue_(entry, ["Height"]),
+    weight: getFirstValue_(entry, ["Weight"]),
+    gpa: getFirstValue_(entry, ["GPA"]),
+    why: getFirstValue_(entry, ["Why do you play football?"]),
+    xHandle: getFirstValue_(entry, ["X Handle"]),
+    hudlUrl: getFirstValue_(entry, ["Hudl Profile URL"]),
+    highlightUrl: getFirstValue_(entry, ["Highlight Video URL"]),
     photoUrl: safeString_(photoUrl),
-    hometown: safeString_(entry["Hometown"]),
-    academicInterests: safeString_(entry["Academic Interests / Intended Major"]),
-    statsSummary: safeString_(entry["Season Stats Summary"]),
-    achievements: safeString_(entry["Honors / Awards / Recruiting Notes"]),
-    passingYards: safeString_(entry["Passing Yards"]),
-    passingTouchdowns: safeString_(entry["Passing Touchdowns"]),
-    rushingYards: safeString_(entry["Rushing Yards"]),
-    rushingTouchdowns: safeString_(entry["Rushing Touchdowns"]),
-    receptions: safeString_(entry["Receptions"]),
-    receivingYards: safeString_(entry["Receiving Yards"]),
-    touchdowns: safeString_(entry["Receiving / Total Touchdowns"]),
-    tackles: safeString_(entry["Tackles"]),
-    interceptions: safeString_(entry["Interceptions"]),
-    benchMax: safeString_(entry["Bench Max"]),
-    squatMax: safeString_(entry["Squat Max"]),
+    hometown: getFirstValue_(entry, ["Hometown"]),
+    academicInterests: getFirstValue_(entry, ["Academic Interests / Intended Major"]),
+    statsSummary: getFirstValue_(entry, ["Season Stats Summary"]),
+    achievements: getFirstValue_(entry, ["Honors / Awards / Recruiting Notes"]),
+    passingYards: getFirstValue_(entry, ["Passing Yards"]),
+    passingTouchdowns: getFirstValue_(entry, ["Passing Touchdowns"]),
+    rushingYards: getFirstValue_(entry, ["Rushing Yards"]),
+    rushingTouchdowns: getFirstValue_(entry, ["Rushing Touchdowns"]),
+    receptions: getFirstValue_(entry, ["Receptions"]),
+    receivingYards: getFirstValue_(entry, ["Receiving Yards"]),
+    touchdowns: getFirstValue_(entry, ["Receiving / Total Touchdowns"]),
+    tackles: getFirstValue_(entry, ["Tackles"]),
+    interceptions: getFirstValue_(entry, ["Interceptions"]),
+    benchMax: getFirstValue_(entry, ["Bench Max"]),
+    squatMax: getFirstValue_(entry, ["Squat Max"]),
   };
 }
 
@@ -367,8 +539,44 @@ function addSectionHeader_(form, title, helpText) {
   }
 }
 
+function getAthleteNameFromResponse_(response) {
+  const itemResponses = response.getItemResponses();
+
+  for (var i = 0; i < itemResponses.length; i += 1) {
+    var itemResponse = itemResponses[i];
+    if (itemResponse.getItem().getTitle() === "Athlete Full Name") {
+      return safeString_(itemResponse.getResponse());
+    }
+  }
+
+  return "";
+}
+
+function buildEditLinkEmail_(athleteName, editUrl) {
+  const greeting = athleteName ? "Hi " + athleteName + "," : "Hi,";
+
+  return [
+    "<p>" + greeting + "</p>",
+    "<p>You can use the link below to update your Clarksburg High School Football recruiting profile, including your headshot, film links, and other information.</p>",
+    '<p><a href="' + editUrl + '">Edit your recruiting profile</a></p>',
+    "<p>If the link opens in the wrong Google account, switch to your school account first and then reopen it.</p>",
+    "<p>Clarksburg Football</p>",
+  ].join("");
+}
+
 function safeString_(value) {
   return value === null || value === undefined ? "" : String(value).trim();
+}
+
+function getFirstValue_(entry, possibleHeaders) {
+  for (var i = 0; i < possibleHeaders.length; i += 1) {
+    var value = safeString_(entry[possibleHeaders[i]]);
+    if (value) {
+      return value;
+    }
+  }
+
+  return "";
 }
 
 function buildSlug_(name, year) {
@@ -390,6 +598,17 @@ function getRecruitingSpreadsheet_() {
   }
 
   return SpreadsheetApp.openById(spreadsheetId);
+}
+
+function getRecruitingForm_() {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const formId = safeString_(scriptProperties.getProperty(FORM_ID_PROPERTY)) || safeString_(EXISTING_RECRUITING_FORM_ID);
+
+  if (!formId) {
+    throw new Error("Form ID not found. Set FORM_ID_PROPERTY or EXISTING_RECRUITING_FORM_ID first.");
+  }
+
+  return FormApp.openById(formId);
 }
 
 function formatOutput_(e, payload) {

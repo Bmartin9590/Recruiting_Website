@@ -39,6 +39,19 @@ That creates:
 
 New form submissions land in the `Athletes` sheet with a blank `publish` column. Change that value to `yes` only when you want an athlete visible on the public website.
 
+If the form-to-sheet sync ever gets out of sync, run `repairRecruitingWorkflow()` in Apps Script. It rebuilds the athlete sheet trigger and re-syncs the current response data.
+
+If athletes have already submitted data into an existing spreadsheet, do not make them fill the form out again. Instead:
+
+1. Set `EXISTING_RECRUITING_SPREADSHEET_ID` at the top of `google-apps-script/RecruitingWorkflow.gs`.
+2. If you are also keeping the original Google Form, set `EXISTING_RECRUITING_FORM_ID` too.
+3. Run `adoptExistingRecruitingSpreadsheet()`.
+4. Run `debugRecruitingWorkflow()` to confirm the script is now pointed at the expected spreadsheet.
+
+This lets you keep the existing response sheet, rebuild the trigger, and repopulate the `Athletes` tab from the spreadsheet that already has submissions.
+
+If athletes need to update profiles later, run `sendEditLinksToAllRespondents()` in Apps Script. It will email each respondent their personal Google Form edit link, so they can upload a headshot or update their recruiting info without submitting a second response.
+
 ### 1B. Create the recruiter inquiry form
 
 Run `createRecruiterInquiryForm()` in the same Apps Script project if you want recruiters to request contact, transcripts, or additional film without exposing coach or athlete phone numbers on the public website.
@@ -102,6 +115,8 @@ If you want recruiters to contact athletes on their own, the safer public option
 Google Form file uploads require athletes to sign in with Google, which works well for your school since every student already has an account. The script now adds an `Athlete Headshot` section, and you finish the setup by adding the `Upload Athlete Headshot` file-upload question manually in the form editor.
 
 The Apps Script includes a `MAKE_PHOTOS_PUBLIC` flag. Leave it `false` unless you are comfortable making uploaded athlete photos viewable on the public site.
+
+If you rename the photo upload question in Google Forms, update the script mapping in `mapRowToAthlete_()` so the uploaded file column is still recognized.
 
 ### Hudl stats
 
