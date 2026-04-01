@@ -11,10 +11,15 @@ const elements = {
   athleteGrid: document.getElementById("athlete-grid"),
   heroMetrics: document.getElementById("hero-metrics"),
   coachContact: document.getElementById("coach-contact"),
+  coachDirectLinks: document.getElementById("coach-direct-links"),
+  schoolAddress: document.getElementById("school-address"),
+  schoolAddressLinks: document.getElementById("school-address-links"),
+  programLinks: document.getElementById("program-links"),
+  headerMaxPrepsButton: document.getElementById("header-maxpreps-button"),
+  headerContactButton: document.getElementById("header-contact-button"),
   profileModal: document.getElementById("profile-modal"),
   modalContent: document.getElementById("modal-content"),
   modalClose: document.getElementById("modal-close"),
-  submitProfileButton: document.getElementById("submit-profile-button"),
   athleteCardTemplate: document.getElementById("athlete-card-template"),
 };
 
@@ -114,25 +119,26 @@ function createNode(tagName, options = {}) {
   return node;
 }
 
-function buildButtonLink({ label, href, className }) {
-  const safeHref = safeUrl(href);
+function buildButtonLink({
+  label,
+  href,
+  className,
+  allowedProtocols = ["https:", "http:"],
+  newTab = true,
+}) {
+  const safeHref = safeUrl(href, { allowedProtocols });
   if (!safeHref) {
     return null;
   }
 
-  return createNode("a", {
-    className,
-    text: label,
-    attrs: {
-      href: safeHref,
-      target: "_blank",
-      rel: "noreferrer",
-    },
-  });
-}
+  const attrs = { href: safeHref };
 
-function isPlaceholderUrl(url) {
-  return !url || url.includes("REPLACE_WITH_YOUR_FORM_ID");
+  if (newTab) {
+    attrs.target = "_blank";
+    attrs.rel = "noreferrer";
+  }
+
+  return createNode("a", { className, text: label, attrs });
 }
 
 function formatClassYear(year) {
@@ -521,23 +527,45 @@ function wireEvents() {
   });
 }
 
-function configureSubmitButton() {
+function configureHeaderButtons() {
   const config = window.RECRUITING_CONFIG || {};
 
-  if (isPlaceholderUrl(config.formUrl)) {
-    elements.submitProfileButton.removeAttribute("target");
-    elements.submitProfileButton.removeAttribute("rel");
-    elements.submitProfileButton.href = "#workflow";
-    elements.submitProfileButton.textContent = "Connect Google Form URL";
-    return;
+  if (elements.headerMaxPrepsButton) {
+    const maxPrepsUrl = safeUrl(config.maxPrepsUrl);
+    if (maxPrepsUrl) {
+      elements.headerMaxPrepsButton.href = maxPrepsUrl;
+      elements.headerMaxPrepsButton.target = "_blank";
+      elements.headerMaxPrepsButton.rel = "noreferrer";
+    } else {
+      elements.headerMaxPrepsButton.href = "#program";
+      elements.headerMaxPrepsButton.removeAttribute("target");
+      elements.headerMaxPrepsButton.removeAttribute("rel");
+    }
   }
 
-  elements.submitProfileButton.href = config.formUrl;
+  if (elements.headerContactButton) {
+    const inquiryUrl = safeUrl(config.recruiterInquiryUrl);
+    if (inquiryUrl) {
+      elements.headerContactButton.href = inquiryUrl;
+      elements.headerContactButton.target = "_blank";
+      elements.headerContactButton.rel = "noreferrer";
+    } else {
+      elements.headerContactButton.href = "#program";
+      elements.headerContactButton.removeAttribute("target");
+      elements.headerContactButton.removeAttribute("rel");
+    }
+  }
 }
 
 function renderCoachContact() {
+  if (!elements.coachContact) {
+    return;
+  }
+
   const config = window.RECRUITING_CONFIG || {};
   elements.coachContact.replaceChildren();
+  const coachName = safeText(config.coachName, "Coach");
+  const coachTitle = safeText(config.coachTitle, "Program staff");
 
   elements.coachContact.appendChild(createNode("p", { className: "eyebrow", text: "Recruiter Access" }));
   elements.coachContact.appendChild(
@@ -545,8 +573,15 @@ function renderCoachContact() {
       text:
         safeText(
           config.publicContactNote,
-          "Recruiters can request athlete contact and supporting information through our staff-managed inquiry form."
+          `${coachName} and the Clarksburg staff can share athlete contact and supporting information through the recruiter inquiry form.`
         ),
+    })
+  );
+
+  elements.coachContact.appendChild(
+    createNode("div", {
+      className: "program-note",
+      text: `${coachName} • ${coachTitle}`,
     })
   );
 
@@ -572,9 +607,77 @@ function renderCoachContact() {
   }
 }
 
+function renderProgramOverview() {
+  const config = window.RECRUITING_CONFIG || {};
+  const coachName = safeText(config.coachName, "Coach");
+
+  if (elements.coachDirectLinks) {
+    elements.coachDirectLinks.replaceChildren();
+
+    const emailLink = buildButtonLink({
+      label: `Email ${coachName}`,
+      href: config.coachEmail ? `mailto:${config.coachEmail}` : "",
+      className: "ghost-button program-link-button",
+      allowedProtocols: ["mailto:"],
+      newTab: false,
+    });
+
+    if (emailLink) {
+      elements.coachDirectLinks.appendChild(emailLink);
+    }
+
+    if (config.coachPhone) {
+      elements.coachDirectLinks.appendChild(
+        createNode("p", {
+          className: "program-contact-line",
+          text: `Phone: ${safeText(config.coachPhone)}`,
+        })
+      );
+    }
+  }
+
+  if (elements.schoolAddress) {
+    elements.schoolAddress.textContent = safeText(config.schoolAddress, "Add the school address in js/config.js");
+  }
+
+  if (elements.schoolAddressLinks) {
+    elements.schoolAddressLinks.replaceChildren();
+
+    const mapLink = buildButtonLink({
+      label: "Open School Map",
+      href: config.schoolMapUrl,
+      className: "ghost-button program-link-button",
+    });
+
+    if (mapLink) {
+      elements.schoolAddressLinks.appendChild(mapLink);
+    }
+  }
+
+  if (elements.programLinks) {
+    elements.programLinks.replaceChildren();
+
+    const resourceLinks = [
+      buildButtonLink({
+        label: "View MaxPreps",
+        href: config.maxPrepsUrl,
+        className: "ghost-button program-link-button",
+      }),
+      buildButtonLink({
+        label: "Recruiter Contact Form",
+        href: config.recruiterInquiryUrl,
+        className: "ghost-button program-link-button",
+      }),
+    ].filter(Boolean);
+
+    resourceLinks.forEach((link) => elements.programLinks.appendChild(link));
+  }
+}
+
 async function init() {
-  configureSubmitButton();
+  configureHeaderButtons();
   renderCoachContact();
+  renderProgramOverview();
   wireEvents();
 
   try {

@@ -174,6 +174,15 @@ select {
   flex-wrap: wrap;
 }
 
+.topbar-actions {
+  justify-content: flex-end;
+}
+
+.topbar-actions .ghost-button,
+.topbar-actions .primary-button {
+  min-width: 150px;
+}
+
 .glass-panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
   border: 1px solid var(--border-soft);
@@ -229,12 +238,13 @@ select {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.95fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.95fr);
   gap: 1.25rem;
+  align-items: stretch;
 }
 
 .hero-copy,
-.hero-side,
+.program-overview,
 .filters,
 .workflow,
 .athlete-card,
@@ -314,70 +324,102 @@ select {
   font-size: 0.95rem;
 }
 
-.signal-list {
-  margin: 1.25rem 0 0;
-  padding-left: 1.15rem;
-  color: var(--text-muted);
-  line-height: 1.7;
+.program-overview,
+.filters,
+.workflow {
+  margin-top: 1.25rem;
 }
 
-.console-block {
-  padding: 1rem;
-  margin-top: 0.5rem;
+.hero .program-overview {
+  margin-top: 0;
+}
+
+.hero-copy,
+.hero .program-overview {
+  height: 100%;
+}
+
+.section-heading {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 0;
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hero-program {
+  align-self: stretch;
+}
+
+.program-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1.2rem;
   border-radius: var(--radius-md);
-  background: rgba(7, 21, 38, 0.34);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 21, 38, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
-.console-label {
+.program-card h4 {
   margin: 0;
+  font-size: 1.15rem;
+}
+
+.program-label {
+  margin: 0 0 0.45rem;
   color: var(--carolina-300);
   font-size: 0.8rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.coach-card {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1.25rem;
+.program-copy {
+  margin: 0.45rem 0 0;
+  color: var(--text-main);
+  line-height: 1.6;
 }
 
-.contact-card {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: var(--radius-md);
-  background: rgba(7, 21, 38, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.program-note {
+  margin: 0.6rem 0 0;
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
-.contact-button {
-  width: 100%;
-  margin-top: 0.9rem;
+.program-card .program-copy:last-of-type {
+  margin-bottom: 0;
 }
 
-.direct-contact-list {
+.program-links {
   display: grid;
-  gap: 0.35rem;
-  margin-top: 0.9rem;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1rem;
 }
 
-.chip {
-  display: inline-flex;
-  padding: 0.55rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--white);
-  font-size: 0.9rem;
+.program-link-button {
+  width: 100%;
+  min-height: 46px;
+  justify-content: center;
 }
 
-.filters,
-.workflow {
-  margin-top: 1.25rem;
+.program-contact-line {
+  margin: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  text-align: center;
+  font-weight: 600;
 }
 
 .filter-controls {
@@ -557,16 +599,18 @@ select {
   border-radius: 28px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
   border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #eef6ff;
 }
 
 .profile-title {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3.2rem);
+  color: #eef6ff !important;
 }
 
 .profile-subtitle,
 .profile-copy {
-  color: var(--text-muted);
+  color: #d7e6f6 !important;
   line-height: 1.7;
 }
 
@@ -587,8 +631,8 @@ select {
 .stat-box {
   padding: 0.9rem;
   border-radius: 18px;
-  background: rgba(6, 18, 34, 0.36);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(10, 24, 44, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .fact-label,
@@ -596,7 +640,7 @@ select {
   display: block;
   margin-bottom: 0.4rem;
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: #b9cee3 !important;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -606,6 +650,7 @@ select {
   margin: 0;
   font-size: 1.08rem;
   font-weight: 700;
+  color: #eef6ff !important;
 }
 
 .profile-links {
@@ -628,6 +673,34 @@ select {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #eef6ff !important;
+}
+
+.profile-copy strong,
+.profile-subtitle strong {
+  color: #eef6ff !important;
+}
+
+.profile-panel a {
+  color: inherit;
+}
+
+.profile-panel .primary-button {
+  color: #071526;
+}
+
+.profile-panel .ghost-button {
+  color: #eef6ff !important;
+}
+
+.profile-panel .eyebrow {
+  color: #b9cee3 !important;
+}
+
+.profile-panel h3,
+.profile-panel p,
+.profile-panel span {
+  color: inherit;
 }
 
 .empty-state {
@@ -657,6 +730,10 @@ select {
   .topbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .topbar-actions {
+    justify-content: stretch;
   }
 }
 

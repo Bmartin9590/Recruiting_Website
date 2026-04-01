@@ -7,10 +7,10 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; img-src 'self' https: data:; script-src 'self' https://script.google.com https://script.googleusercontent.com https://*.googleusercontent.com; style-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://*.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; frame-ancestors 'none'; upgrade-insecure-requests"
     />
-    <title>Clarksburg Football Recruiting</title>
+    <title>Clarksburg Football | Recruiting Board</title>
     <meta
       name="description"
-      content="Clarksburg High School Football recruiting hub for student-athlete profiles, film, measurables, and academics."
+      content="Clarksburg High School Football recruiting board for student-athlete profiles, film, measurables, academics, and program information."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,20 +33,25 @@
           </div>
           <div>
             <p class="eyebrow">Clarksburg High School</p>
-            <h1>Football Recruiting Hub</h1>
+            <h1>Coyotes Football</h1>
           </div>
         </div>
 
         <div class="topbar-actions">
-          <a class="ghost-button" href="#workflow">Operations</a>
+          <a class="ghost-button" href="#program">Program Info</a>
+          <a
+            class="ghost-button"
+            id="header-maxpreps-button"
+            href="#"
+          >
+            MaxPreps
+          </a>
           <a
             class="primary-button"
-            id="submit-profile-button"
+            id="header-contact-button"
             href="#"
-            target="_blank"
-            rel="noreferrer"
           >
-            Athlete Submission Form
+            Recruiter Contact
           </a>
         </div>
       </header>
@@ -54,60 +59,74 @@
       <main class="content">
         <section class="hero">
           <div class="hero-copy glass-panel">
-            <p class="eyebrow">Clarksburg Football Recruiting Platform</p>
-            <h2>Roster, film, academics, and recruiter access in one place.</h2>
+            <p class="eyebrow">Clarksburg Coyotes Football</p>
+            <h2>Clarksburg Football. Program first. Players on display.</h2>
             <p class="hero-text">
-              Use this page as the program recruiting board. Athletes submit their profile once, staff reviews and
-              publishes approved entries, and recruiters can move straight into film, measurables, academics, and
-              contact paths without asking for separate documents.
+              Clarksburg High School Football is built on toughness, discipline, development, and pride in the
+              program. This site gives college coaches a direct look at our players, their film, their academics,
+              and the standard they represent.
             </p>
 
             <div class="hero-actions">
               <a class="primary-button" href="#athletes">Open Recruiting Board</a>
-              <a class="ghost-button" href="#workflow">View Operations</a>
+              <a class="ghost-button" href="#program">View Program Info</a>
             </div>
 
             <div class="hero-metrics" id="hero-metrics"></div>
 
             <div class="platform-lanes">
               <article class="lane-card">
-                <p class="lane-label">Intake</p>
-                <h3 class="lane-title">Athlete profiles</h3>
-                <p class="lane-copy">Form-based submissions for measurables, GPA, Hudl, X handle, and approved public profile data.</p>
+                <p class="lane-label">Identity</p>
+                <h3 class="lane-title">Program standards</h3>
+                <p class="lane-copy">Clarksburg football emphasizes development, accountability, and representing the program the right way on and off the field.</p>
               </article>
               <article class="lane-card">
-                <p class="lane-label">Review</p>
-                <h3 class="lane-title">Coach approval</h3>
-                <p class="lane-copy">Staff controls what goes live by reviewing the sheet and publishing only the athletes ready for recruiters.</p>
+                <p class="lane-label">Players</p>
+                <h3 class="lane-title">Recruiting board</h3>
+                <p class="lane-copy">Film, measurables, GPA, awards, and public recruiting links are organized so coaches can evaluate our athletes quickly.</p>
               </article>
               <article class="lane-card">
-                <p class="lane-label">Access</p>
-                <h3 class="lane-title">Recruiter view</h3>
-                <p class="lane-copy">College staff can browse the board, open profiles, watch film, and use approved contact channels.</p>
+                <p class="lane-label">Recruiting</p>
+                <h3 class="lane-title">Coach access</h3>
+                <p class="lane-copy">College coaches can review approved profiles, watch film, and connect through the program or an athlete's public contact path.</p>
               </article>
             </div>
           </div>
 
-          <aside class="hero-side glass-panel">
-            <p class="eyebrow">Program Console</p>
-
-            <div class="console-block">
-              <p class="console-label">Primary Uses</p>
-              <ul class="signal-list">
-                <li>Review active athlete profiles and recruiting-ready data.</li>
-                <li>Share one consistent board with college programs.</li>
-                <li>Route recruiter requests without exposing private contact info.</li>
-              </ul>
+          <section class="program-overview hero-program glass-panel" id="program">
+            <div class="section-heading">
+              <p class="eyebrow">Program Info</p>
+              <h3>Clarksburg High School Football</h3>
             </div>
 
-            <div class="coach-card">
-              <span class="chip">Public roster board</span>
-              <span class="chip">Staff approval gate</span>
-              <span class="chip">Recruiter request flow</span>
-            </div>
+            <div class="program-grid">
+              <article class="program-card">
+                <p class="program-label">Head Coach</p>
+                <h4>Brandon Martin</h4>
+                <p class="program-copy">Varsity Head Coach</p>
+                <p class="program-note">
+                  College coaches can reach out directly or use the recruiting request form for athlete-specific
+                  follow-up.
+                </p>
+                <div class="program-links" id="coach-direct-links"></div>
+              </article>
 
-            <div class="contact-card" id="coach-contact"></div>
-          </aside>
+              <article class="program-card">
+                <p class="program-label">School Address</p>
+                <h4>Clarksburg High School</h4>
+                <p class="program-copy" id="school-address"></p>
+                <p class="program-note">Main campus and home site for Clarksburg High School Football.</p>
+                <div class="program-links" id="school-address-links"></div>
+              </article>
+
+              <article class="program-card">
+                <p class="program-label">Program Links</p>
+                <h4>Recruiting Resources</h4>
+                <p class="program-note">Quick access to public program pages and recruiting updates.</p>
+                <div class="program-links" id="program-links"></div>
+              </article>
+            </div>
+          </section>
         </section>
 
         <section class="filters glass-panel" id="athletes">
@@ -140,8 +159,8 @@
 
         <section class="workflow glass-panel" id="workflow">
           <div class="section-heading">
-            <p class="eyebrow">Operations</p>
-            <h3>How the platform is used day to day</h3>
+            <p class="eyebrow">Recruiting Process</p>
+            <h3>How player information gets updated</h3>
           </div>
 
           <div class="workflow-grid">
